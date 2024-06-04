@@ -10,19 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Set up Bash environment
+      run: |
+        shopt -s nocasematch
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      run: docker build -t dockerfile .
+      run: docker build -t Dockerfile .
 
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
     - name: Tag Docker image
-      run: docker tag dockerfile:latest ghcr.io/${{ github.repository_owner }}/my-docker-image:Dockerfile
+      run: |
+        docker tag Dockerfile:latest ghcr.io/${{ github.repository_owner }}/Dockerfile:Dockerfile
+        docker tag Dockerfile:latest ghcr.io/${{ github.repository_owner }}/Dockerfile:latest
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        docker push ghcr.io/${{ github.repository_owner }}/my-docker-image:Dockerfile
-        docker push ghcr.io/${{ github.repository_owner }}/my-docker-image:latest
+        docker push ghcr.io/${{ github.repository_owner }}/Dockerfile:Dockerfile
+        docker push ghcr.io/${{ github.repository_owner }}/Dockerfile:latest
